@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon foreground (108dp grid, art inside the 66dp safe zone): a map pin with a play button cut out. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:pivotX="54" android:pivotY="54" android:scaleX="0.78" android:scaleY="0.78">
+        <path android:fillColor="#FFF2A10C" android:fillType="evenOdd" android:pathData="M54,86C54,86 30,63 30,46A24,24 0,0 1,78 46C78,63 54,86 54,86ZM48.5,35.5L64.5,46L48.5,56.5Z" />
+    </group>
+</vector>

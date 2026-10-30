@@ -29,6 +29,14 @@ fun RouteMap(
     bearing: Double? = null,
     autoPan: Boolean = false,
     editable: Boolean = false,
+    /** Route line color as an ARGB int; null uses the default route color. */
+    routeColor: Int? = null,
+    /** A faint dashed line, e.g. the unedited route while editing. */
+    ghost: List<LatLon> = emptyList(),
+    /** Show the amber "mocked location" halo on the position marker. */
+    live: Boolean = false,
+    /** Dim the light OSM tiles for the dark theme. */
+    dark: Boolean = false,
     onEdit: (RouteEdit) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -58,7 +66,10 @@ fun RouteMap(
         factory = { controller.mapView },
         modifier = modifier,
         update = {
-            controller.update(routeKey, waypoints, stops, position, bearing, autoPan, editable) { currentOnEdit(it) }
+            controller.update(
+                routeKey, waypoints, stops, position, bearing, autoPan, editable,
+                routeColor ?: RouteMapController.DEFAULT_ROUTE_COLOR, ghost, live, dark,
+            ) { currentOnEdit(it) }
         },
     )
 }

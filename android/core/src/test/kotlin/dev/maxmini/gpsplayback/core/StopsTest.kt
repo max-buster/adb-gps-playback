@@ -66,5 +66,8 @@ class StopJumpTest {
         assertEquals(300.5, e.previousStopBefore(d, 900.0)!!, 0.0)
         assertEquals(0.0, e.previousStopBefore(d, 300.0)!!, 0.0)
         org.junit.Assert.assertNull(e.previousStopBefore(d, 0.0))
+        assertEquals(1, e.nextStopIndex(d, 0.0))
+        assertEquals(3, e.nextStopIndex(d, 300.0))
+        org.junit.Assert.assertNull(e.nextStopIndex(d, 900.0))
     }
 }

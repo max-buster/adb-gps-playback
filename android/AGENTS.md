@@ -23,6 +23,7 @@ through adb. Sideload-only personal tool, so there is no Play Store policy work.
   - `ui/map/`: MapLibre. `RouteMapController` owns the `MapView` and edit
     gestures and has **no Compose imports**, so it can be type-checked on its
     own. `RouteMap` is the thin Compose wrapper around it.
+  - `ui/theme/`: color, type and shape tokens; `ui/components/`: shared widgets.
   - `ui/`: Compose screens.
 
 ## Ground rules
@@ -60,6 +61,10 @@ through adb. Sideload-only personal tool, so there is no Play Store policy work.
 - **Keep dependencies minimal.** No icon libraries or UI kits beyond Material 3,
   no navigation library, no DI framework. Icons are hand-written vector
   drawables in `res/drawable`.
+- **Use the design tokens** (`ui/theme`, documented in `docs/design-system.md`):
+  `MaterialTheme.colorScheme` plus `AppTokens.colors` for live/route/ok, and
+  `AppType` for labels and numbers. No literal colors in screens, and amber
+  (`live`) only for the mocking state. Shared widgets live in `ui/components`.
 - Tests: JUnit 4 in `core/src/test`. Add tests there for any logic you add to `:core`.
 
 ## Commands

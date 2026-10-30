@@ -11,6 +11,10 @@ data class GtfsRoute(
     val shortName: String? = null,
     val longName: String? = null,
     val routeType: String? = null,
+    /** `route_color` as `RRGGBB` (no `#`), or null if missing or malformed. */
+    val color: String? = null,
+    /** `route_text_color` as `RRGGBB`, or null. */
+    val textColor: String? = null,
 )
 
 data class GtfsTrip(
@@ -54,6 +58,11 @@ data class EditableRoute(
     val waypoints: List<LatLon>,
     /** The trip's stops, used for dwelling; empty for routes staged before stops were read. */
     val stops: List<RouteStop> = emptyList(),
+    /** `route_short_name`, shown in the route bullet. Null for routes staged before it was stored. */
+    val shortName: String? = null,
+    /** Feed `route_color` / `route_text_color` as `RRGGBB`; null means use the app's default. */
+    val color: String? = null,
+    val textColor: String? = null,
 )
 
 @Serializable
@@ -95,6 +104,7 @@ fun GtfsData.labelFor(trip: GtfsTrip): String {
 fun GtfsData.editableRouteFor(tripId: String, stops: List<RouteStop> = emptyList()): EditableRoute? {
     val trip = trips.find { it.tripId == tripId } ?: return null
     val shape = trip.shapeId?.let { shapes[it] } ?: return null
+    val route = routes.find { it.routeId == trip.routeId }
     return EditableRoute(
         id = tripId,
         routeId = trip.routeId,
@@ -102,5 +112,8 @@ fun GtfsData.editableRouteFor(tripId: String, stops: List<RouteStop> = emptyList
         originalPoints = shape.points,
         waypoints = shape.points,
         stops = stops,
+        shortName = route?.shortName,
+        color = route?.color,
+        textColor = route?.textColor,
     )
 }

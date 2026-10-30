@@ -45,6 +45,14 @@ class PlaybackService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var loop: Job? = null
     private var sink: MockLocationSink? = null
+    /** Stop distances for the notification, cached per route geometry. */
+    private var stopCache: Pair<EditableRoute, DoubleArray>? = null
+
+    private fun stopDistances(route: EditableRoute): DoubleArray {
+        val cached = stopCache
+        if (cached != null && cached.first.id == route.id && cached.first.waypoints === route.waypoints) return cached.second
+        return PlaybackEngine(route.waypoints, route.stops).stopDistances.also { stopCache = route to it }
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -57,6 +65,14 @@ class PlaybackService : Service() {
             }
             ACTION_PAUSE -> {
                 AppStore.setPlayer { it.copy(playing = false) }
+                if (loop == null) return stopAll()
+            }
+            ACTION_NEXT_STOP -> {
+                val route = AppStore.activeRoute() ?: return stopAll()
+                val progress = AppStore.player.value.progressMeters
+                PlaybackEngine.nextStopAfter(stopDistances(route), progress)?.let { m ->
+                    AppStore.setPlayer { it.copy(progressMeters = m) }
+                }
                 if (loop == null) return stopAll()
             }
             ACTION_STOP -> return stopAll()
@@ -189,6 +205,13 @@ class PlaybackService : Service() {
         val total = route?.let { totalMeters(it) } ?: 0.0
         val pct = if (total > 0) (player.progressMeters / total).coerceIn(0.0, 1.0) else 0.0
         val speed = PlaybackEngine.effectiveSpeed(player) * 3.6
+        val stops = route?.let { stopDistances(it) } ?: DoubleArray(0)
+        val nextIndex = PlaybackEngine.nextStopIndex(stops, player.progressMeters)
+        val nextStop = nextIndex?.let { i ->
+            val name = route?.stops?.getOrNull(i)?.name ?: "stop ${i + 1}"
+            val ahead = stops[i] - player.progressMeters
+            "next $name in " + if (ahead >= 1000) "%.1f km".format(ahead / 1000) else "%.0f m".format(ahead)
+        }
 
         val toggle = if (player.playing) {
             NotificationCompat.Action(R.drawable.ic_pause, "Pause", servicePending(ACTION_PAUSE))
@@ -201,13 +224,18 @@ class PlaybackService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_location)
-            .setContentTitle(route?.label ?: getString(R.string.app_name))
+            .setSmallIcon(R.drawable.ic_stat_playback)
+            // Amber: the app's "location is being mocked" color.
+            .setColor(ContextCompat.getColor(this, R.color.live))
+            .setContentTitle(
+                (if (player.playing) "Mocking " else "Holding at ") + (route?.label ?: getString(R.string.app_name)),
+            )
             .setContentText(
-                "%s · %.2f / %.2f km · %.0f km/h".format(
-                    if (player.playing) "Playing" else "Paused",
-                    player.progressMeters / 1000, total / 1000, speed,
-                ),
+                listOfNotNull(
+                    "%.0f%%".format(pct * 100),
+                    nextStop ?: "%.2f / %.2f km".format(player.progressMeters / 1000, total / 1000),
+                    "%.0f km/h".format(speed).takeIf { player.playing },
+                ).joinToString(" · "),
             )
             .setProgress(1000, (pct * 1000).toInt(), false)
             .setOngoing(true)
@@ -215,6 +243,11 @@ class PlaybackService : Service() {
             .setSilent(true)
             .setContentIntent(open)
             .addAction(toggle)
+            .apply {
+                if (nextIndex != null) {
+                    addAction(NotificationCompat.Action(R.drawable.ic_skip_next, "Next stop", servicePending(ACTION_NEXT_STOP)))
+                }
+            }
             .addAction(NotificationCompat.Action(R.drawable.ic_stop, "Stop", servicePending(ACTION_STOP)))
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
@@ -242,6 +275,7 @@ class PlaybackService : Service() {
         const val ACTION_PLAY = "dev.maxmini.gpsplayback.PLAY"
         const val ACTION_PAUSE = "dev.maxmini.gpsplayback.PAUSE"
         const val ACTION_STOP = "dev.maxmini.gpsplayback.STOP"
+        const val ACTION_NEXT_STOP = "dev.maxmini.gpsplayback.NEXT_STOP"
 
         private fun totalMeters(route: EditableRoute) =
             dev.maxmini.gpsplayback.core.geo.polylineLengthMeters(route.waypoints)

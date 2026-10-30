@@ -45,6 +45,24 @@ class GtfsParserTest {
         assertEquals(42L, data.loadedAt)
     }
 
+    @Test fun readsRouteColorsOntoStagedRoute() {
+        val bytes = zip(
+            mapOf(
+                "routes.txt" to "route_id,route_short_name,route_color,route_text_color\nR1,N,005b95,FFFFFF\nR2,K,bogus,\n",
+                "trips.txt" to "route_id,trip_id,shape_id\nR1,T1,SH1\nR2,T2,SH1\n",
+                "shapes.txt" to "shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence\nSH1,1,2,1\nSH1,3,4,2\n",
+            ),
+        )
+        val data = GtfsParser.parse({ ByteArrayInputStream(bytes) })
+        val n = data.editableRouteFor("T1")!!
+        assertEquals("N", n.shortName)
+        assertEquals("005B95", n.color)
+        assertEquals("FFFFFF", n.textColor)
+        val k = data.editableRouteFor("T2")!!
+        assertNull(k.color)
+        assertNull(k.textColor)
+    }
+
     @Test fun synthesizesShapeFromStopsWhenMissing() {
         val bytes = zip(
             mapOf(
@@ -59,6 +77,7 @@ class GtfsParserTest {
         val data = GtfsParser.parse({ ByteArrayInputStream(bytes) })
         val t1 = data.trips.first { it.tripId == "T1" }
         assertEquals("__trip_T1", t1.shapeId)
+        org.junit.Assert.assertTrue(GtfsParser.isSynthesized(t1.shapeId!!))
         assertEquals(
             listOf(LatLon(1.0, 2.0), LatLon(1.1, 2.1), LatLon(1.2, 2.2)),
             data.shapes["__trip_T1"]!!.points,
