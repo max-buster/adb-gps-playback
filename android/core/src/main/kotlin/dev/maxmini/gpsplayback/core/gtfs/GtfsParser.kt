@@ -7,6 +7,7 @@ import dev.maxmini.gpsplayback.core.model.GtfsStop
 import dev.maxmini.gpsplayback.core.model.GtfsTrip
 import dev.maxmini.gpsplayback.core.model.LatLon
 import dev.maxmini.gpsplayback.core.model.RouteStop
+import dev.maxmini.gpsplayback.core.style.RouteColors
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.zip.ZipInputStream
@@ -23,6 +24,9 @@ import java.util.zip.ZipInputStream
  */
 object GtfsParser {
     private const val SYNTH_PREFIX = "__trip_"
+
+    /** True for shapes this parser built from a trip's stops because the feed had none. */
+    fun isSynthesized(shapeId: String): Boolean = shapeId.startsWith(SYNTH_PREFIX)
 
     fun parse(
         openZip: () -> InputStream,
@@ -43,6 +47,8 @@ object GtfsParser {
                         shortName = get("route_short_name").ifEmpty { null },
                         longName = get("route_long_name").ifEmpty { null },
                         routeType = get("route_type").ifEmpty { null },
+                        color = RouteColors.normalizeHex(get("route_color")),
+                        textColor = RouteColors.normalizeHex(get("route_text_color")),
                     )
                 }
                 "trips.txt" -> forEachCsvRecord(reader) { get ->

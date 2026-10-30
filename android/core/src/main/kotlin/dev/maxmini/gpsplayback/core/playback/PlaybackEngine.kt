@@ -160,6 +160,10 @@ class PlaybackEngine(
         fun nextStopAfter(stopDistances: DoubleArray, meters: Double): Double? =
             stopDistances.firstOrNull { it > meters + JUMP_EPS_M }
 
+        /** Index of the first stop strictly ahead of [meters], matching [nextStopAfter], or null. */
+        fun nextStopIndex(stopDistances: DoubleArray, meters: Double): Int? =
+            stopDistances.indexOfFirst { it > meters + JUMP_EPS_M }.takeIf { it >= 0 }
+
         /** Distance of the last stop strictly behind [meters] (beyond a small tolerance), or null. */
         fun previousStopBefore(stopDistances: DoubleArray, meters: Double): Double? =
             stopDistances.lastOrNull { it < meters - JUMP_EPS_M }

@@ -60,6 +60,10 @@ class RouteMapController(context: Context) {
     private var routeKey: String? = null
     private var waypoints: List<LatLon> = emptyList()
     private var stops: List<LatLon> = emptyList()
+    private var ghost: List<LatLon> = emptyList()
+    private var routeColor: Int = DEFAULT_ROUTE_COLOR
+    private var live = false
+    private var dark = false
     private var position: LatLon? = null
     private var bearing: Double? = null
     private var autoPan = false
@@ -70,6 +74,10 @@ class RouteMapController(context: Context) {
     private var renderedWaypoints: List<LatLon>? = null
     private var renderedStops: List<LatLon>? = null
     private var renderedEditable: Boolean? = null
+    private var renderedGhost: List<LatLon>? = null
+    private var renderedColor: Int? = null
+    private var renderedLive: Boolean? = null
+    private var renderedDark: Boolean? = null
     private var fittedKey: String? = null
     private var pannedTo: LatLon? = null
 
@@ -116,8 +124,16 @@ class RouteMapController(context: Context) {
         bearing: Double?,
         autoPan: Boolean,
         editable: Boolean,
+        routeColor: Int,
+        ghost: List<LatLon>,
+        live: Boolean,
+        dark: Boolean,
         onEdit: (RouteEdit) -> Unit,
     ) {
+        this.routeColor = routeColor
+        this.ghost = ghost
+        this.live = live
+        this.dark = dark
         this.routeKey = routeKey
         this.waypoints = waypoints
         this.stops = stops
@@ -140,6 +156,36 @@ class RouteMapController(context: Context) {
         if (renderedStops !== stops) {
             s.getSourceAs<GeoJsonSource>(STOPS_SOURCE)?.setGeoJson(GeoJson.vertices(stops))
             renderedStops = stops
+        }
+        if (renderedGhost !== ghost) {
+            s.getSourceAs<GeoJsonSource>(GHOST_SOURCE)?.setGeoJson(GeoJson.line(ghost))
+            renderedGhost = ghost
+        }
+        if (renderedColor != routeColor) {
+            s.getLayer(ROUTE_LAYER)?.setProperties(PropertyFactory.lineColor(routeColor))
+            s.getLayer(GHOST_LAYER)?.setProperties(PropertyFactory.lineColor(routeColor))
+            s.getLayer(VERTICES_LAYER)?.setProperties(PropertyFactory.circleStrokeColor(routeColor))
+            renderedColor = routeColor
+        }
+        if (renderedLive != live) {
+            // Amber halo on the marker while the device's location is being mocked.
+            s.getLayer(POSITION_LAYER)?.setProperties(
+                PropertyFactory.iconImage(
+                    Expression.switchCase(
+                        Expression.get("hasBearing"), Expression.literal(if (live) ARROW_LIVE_IMAGE else ARROW_IMAGE),
+                        Expression.literal(if (live) DOT_LIVE_IMAGE else DOT_IMAGE),
+                    ),
+                ),
+            )
+            renderedLive = live
+        }
+        if (renderedDark != dark) {
+            // OSM tiles are light-only; dim them in the dark theme instead of switching tile sources.
+            s.getLayer(BASE_LAYER)?.setProperties(
+                PropertyFactory.rasterBrightnessMax(if (dark) 0.7f else 1f),
+                PropertyFactory.rasterSaturation(if (dark) -0.4f else 0f),
+            )
+            renderedDark = dark
         }
         if (renderedEditable != editable) {
             s.getLayer(VERTICES_LAYER)?.setProperties(
@@ -182,16 +228,29 @@ class RouteMapController(context: Context) {
     }
 
     private fun addLayers(s: Style) {
-        s.addImage(ARROW_IMAGE, positionBitmap(withArrow = true))
-        s.addImage(DOT_IMAGE, positionBitmap(withArrow = false))
+        s.addImage(ARROW_IMAGE, positionBitmap(withArrow = true, live = false))
+        s.addImage(DOT_IMAGE, positionBitmap(withArrow = false, live = false))
+        s.addImage(ARROW_LIVE_IMAGE, positionBitmap(withArrow = true, live = true))
+        s.addImage(DOT_LIVE_IMAGE, positionBitmap(withArrow = false, live = true))
+        s.addSource(GeoJsonSource(GHOST_SOURCE))
         s.addSource(GeoJsonSource(ROUTE_SOURCE))
         s.addSource(GeoJsonSource(VERTICES_SOURCE))
         s.addSource(GeoJsonSource(STOPS_SOURCE))
         s.addSource(GeoJsonSource(POSITION_SOURCE))
+        // The unedited route, faint and dashed, once the route has been edited.
+        s.addLayer(
+            LineLayer(GHOST_LAYER, GHOST_SOURCE).withProperties(
+                PropertyFactory.lineColor(routeColor),
+                PropertyFactory.lineWidth(4f),
+                PropertyFactory.lineOpacity(0.35f),
+                PropertyFactory.lineDasharray(arrayOf(0.5f, 2f)),
+                PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+            ),
+        )
         s.addLayer(
             LineLayer(ROUTE_LAYER, ROUTE_SOURCE).withProperties(
-                PropertyFactory.lineColor(ROUTE_COLOR),
-                PropertyFactory.lineWidth(4f),
+                PropertyFactory.lineColor(routeColor),
+                PropertyFactory.lineWidth(5f),
                 PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
                 PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
             ),
@@ -209,7 +268,7 @@ class RouteMapController(context: Context) {
             CircleLayer(VERTICES_LAYER, VERTICES_SOURCE).withProperties(
                 PropertyFactory.circleRadius(6f),
                 PropertyFactory.circleColor(Color.WHITE),
-                PropertyFactory.circleStrokeColor(ROUTE_COLOR),
+                PropertyFactory.circleStrokeColor(routeColor),
                 PropertyFactory.circleStrokeWidth(2.5f),
                 PropertyFactory.visibility(Property.NONE),
             ),
@@ -230,24 +289,39 @@ class RouteMapController(context: Context) {
         )
     }
 
-    /** A blue dot with a white ring; with a north-pointing arrow when [withArrow]. */
-    private fun positionBitmap(withArrow: Boolean): Bitmap {
-        val size = (28 * density).toInt()
+    /**
+     * An ink dot with a white ring, with a north-pointing arrow when [withArrow].
+     * When [live] it also gets the amber halo that marks a mocked location.
+     */
+    private fun positionBitmap(withArrow: Boolean, live: Boolean): Bitmap {
+        val size = (40 * density).toInt()
         val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
-        val r = size / 2f
+        val center = size / 2f
+        val body = 14 * density
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        if (live) {
+            paint.color = LIVE_COLOR
+            paint.alpha = 0x55
+            c.drawCircle(center, center, center, paint)
+            paint.alpha = 0xFF
+            c.drawCircle(center, center, body + 3 * density, paint)
+        }
         paint.color = Color.WHITE
-        c.drawCircle(r, r, r, paint)
+        c.drawCircle(center, center, body, paint)
         paint.color = POSITION_COLOR
-        c.drawCircle(r, r, r - 3 * density, paint)
+        c.drawCircle(center, center, body - 3 * density, paint)
+        // The arrow is drawn in a box the size of the old 28dp marker, centered.
+        val r = center
+        val box = 28 * density
+        val o = center - box / 2
         if (withArrow) {
             paint.color = Color.WHITE
             val arrow = Path().apply {
-                moveTo(r, size * 0.2f)
-                lineTo(size * 0.72f, size * 0.74f)
-                lineTo(r, size * 0.6f)
-                lineTo(size * 0.28f, size * 0.74f)
+                moveTo(r, o + box * 0.2f)
+                lineTo(o + box * 0.72f, o + box * 0.74f)
+                lineTo(r, o + box * 0.6f)
+                lineTo(o + box * 0.28f, o + box * 0.74f)
                 close()
             }
             c.drawPath(arrow, paint)
@@ -377,7 +451,12 @@ class RouteMapController(context: Context) {
 
     fun onLowMemory() = mapView.onLowMemory()
 
-    private companion object {
+    internal companion object {
+        const val GHOST_SOURCE = "ghost"
+        const val GHOST_LAYER = "route-ghost"
+        const val BASE_LAYER = "osm" // the raster layer in OSM_STYLE_JSON
+        const val ARROW_LIVE_IMAGE = "position-arrow-live"
+        const val DOT_LIVE_IMAGE = "position-dot-live"
         const val ROUTE_SOURCE = "route"
         const val VERTICES_SOURCE = "vertices"
         const val POSITION_SOURCE = "position"
@@ -388,9 +467,11 @@ class RouteMapController(context: Context) {
         const val POSITION_LAYER = "position"
         const val ARROW_IMAGE = "position-arrow"
         const val DOT_IMAGE = "position-dot"
-        const val ROUTE_COLOR = "#3B82F6" // same blue as the web editor
-        const val STOP_COLOR = "#374151"
-        val POSITION_COLOR = Color.rgb(0x1E, 0x6F, 0xD9)
+        // Design tokens (ui/theme/Color.kt): route default magenta, ink, live amber.
+        val DEFAULT_ROUTE_COLOR = Color.rgb(0xC0, 0x26, 0x7E)
+        const val STOP_COLOR = "#111A21"
+        val POSITION_COLOR = Color.rgb(0x11, 0x1A, 0x21)
+        val LIVE_COLOR = Color.rgb(0xF2, 0xA1, 0x0C)
         const val PAN_MS = 300
         const val VERTEX_RADIUS_DP = 24.0
         const val INSERT_RADIUS_DP = 32.0

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notification small icon: the play pin from the launcher icon, white on transparent. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="72" android:viewportHeight="72">
+    <group android:translateX="-18" android:translateY="-18">
+        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M54,86C54,86 30,63 30,46A24,24 0,0 1,78 46C78,63 54,86 54,86ZM48.5,35.5L64.5,46L48.5,56.5Z" />
+    </group>
+</vector>

@@ -51,8 +51,9 @@ Permissions: `ACCESS_FINE_LOCATION` (the location FGS type requires it on API
 | 3 | GTFS import (SAF picker, streaming parser) + staging + persistence | 🟡 Code written. Parser is unit tested; UI not yet run |
 | 4 | Play screen: controls + MapLibre map with route, heading-arrow position marker, auto-pan | 🟡 Code written. The map controller type-checks against the real Android + MapLibre classes; not yet run |
 | 5 | Editor screen: drag waypoint, tap near the line to insert, long-press to delete, reset | 🟡 Code written. Edit ops and hit testing are unit tested; gestures not yet tried on a device |
-| 6 | Polish: battery-optimization exemption prompt, tick-rate setting in UI, a real launcher icon | ⬜ Not started |
+| 6 | Polish: battery-optimization exemption prompt, tick-rate setting in UI (launcher icon done in phase 8) | ⬜ Not started |
 | 7 | Stop at stops: read the staged trip's stops, wait a set time at each (toggle, 0–120 s) | 🟡 Code written. Dwell and stop placement are unit tested (29 `:core` tests total); the UI hasn't been run |
+| 8 | Design system: fixed theme + Overpass, GTFS route colors, live status pill, strip scrubber, Play bottom sheet, play-pin launcher icon (see `docs/design-system.md`) | 🟡 Code written. Route colors and color math are unit tested (35 `:core` tests); the UI hasn't been compiled or run |
 
 The first commit was written in an environment without access to Google's
 Maven repository, so **`:app` has not been compiled yet**. Also, the AGP,
