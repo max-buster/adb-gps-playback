@@ -23,7 +23,7 @@ internal const val OSM_STYLE_JSON = """
 """
 
 // The OSM tile usage policy requires an identifying User-Agent.
-private const val USER_AGENT = "GpsPlayback/0.1 (Android; +https://github.com/maxmini-dev/adb-gps-playback)"
+internal const val USER_AGENT = "GpsPlayback/0.1 (Android; +https://github.com/max-buster/adb-gps-playback)"
 
 /** Call once from Application.onCreate, before any MapView is created. */
 fun initMaps(context: Context) {

@@ -92,26 +92,34 @@ fun LoadScreen(onStaged: () -> Unit) {
     var filter by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf<String?>(null) }
     var staging by remember { mutableStateOf(setOf<String>()) }
+    var showExamples by remember { mutableStateOf(false) }
 
-    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        // Keep read access so staging can re-read the zip later.
-        runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-        val open: () -> InputStream = {
-            context.contentResolver.openInputStream(uri) ?: throw FileNotFoundException(uri.toString())
-        }
+    /** Parse a feed off the main thread and make it the loaded one. [name] may read the content resolver. */
+    fun load(open: () -> InputStream, name: () -> String?) {
         loading = true
         message = null
         scope.launch {
             try {
-                val data = withContext(Dispatchers.IO) { GtfsParser.parse(open, feedName = displayName(context, uri)) }
+                val data = withContext(Dispatchers.IO) { GtfsParser.parse(open, feedName = name()) }
                 AppStore.setGtfs(data, open)
+                filter = ""
+                expanded = null
             } catch (e: Exception) {
                 message = "Couldn't read feed: ${e.message ?: e}"
             } finally {
                 loading = false
             }
         }
+    }
+
+    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        // Keep read access so staging can re-read the zip later.
+        runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+        load(
+            open = { context.contentResolver.openInputStream(uri) ?: throw FileNotFoundException(uri.toString()) },
+            name = { displayName(context, uri) },
+        )
     }
     val openPicker = {
         pick.launch(arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -130,7 +138,7 @@ fun LoadScreen(onStaged: () -> Unit) {
         Column(Modifier.fillMaxSize()) {
             Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (feed == null) {
-                    EmptyFeed(loading, onOpen = openPicker)
+                    EmptyFeed(loading, onOpen = openPicker, onExamples = { showExamples = true })
                 } else {
                     FlatCard {
                         Row(Modifier.padding(start = 14.dp, end = 6.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -143,7 +151,10 @@ fun LoadScreen(onStaged: () -> Unit) {
                                 )
                             }
                             if (loading) CircularProgressIndicator(Modifier.size(24.dp))
-                            else TextButton(onClick = openPicker) { Text("Replace") }
+                            else {
+                                TextButton(onClick = { showExamples = true }) { Text("Examples") }
+                                TextButton(onClick = openPicker) { Text("Replace") }
+                            }
                         }
                     }
                     OutlinedTextField(
@@ -190,16 +201,26 @@ fun LoadScreen(onStaged: () -> Unit) {
             StagedBar(staged.values, onStaged, Modifier.align(Alignment.BottomCenter).padding(12.dp))
         }
     }
+    if (showExamples) {
+        ExampleFeedsDialog(
+            onOpen = { file, sample ->
+                showExamples = false
+                load(open = { file.inputStream() }, name = { sample.name })
+            },
+            onDismiss = { showExamples = false },
+        )
+    }
 }
 
 @Composable
-private fun EmptyFeed(loading: Boolean, onOpen: () -> Unit) {
+private fun EmptyFeed(loading: Boolean, onOpen: () -> Unit, onExamples: () -> Unit) {
     FlatCard {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Open a GTFS feed", style = MaterialTheme.typography.titleMedium)
             Muted("Pick a GTFS .zip, then stage the trips you want to replay. Routes without shapes.txt get a line built from their stops.")
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(enabled = !loading, onClick = onOpen) { Text("Open GTFS zip") }
+                TextButton(enabled = !loading, onClick = onExamples) { Text("Try an example") }
                 if (loading) CircularProgressIndicator(Modifier.size(24.dp))
             }
         }

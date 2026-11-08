@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "feeds": [
+    {
+      "id": "demo-manhattan",
+      "name": "Demo: Manhattan (with shapes)",
+      "description": "Two made-up bus routes along Fifth Avenue and 42nd Street, both directions, with shapes.txt.",
+      "region": "New York, US",
+      "license": "CC0 (synthetic data)",
+      "url": "feeds/demo-manhattan.zip",
+      "sizeBytes": 6665,
+      "sha256": "6c92ab2dec59c8ce083160d7d4857a76a9742e48b7f57584922d3858f1ddb097"
+    },
+    {
+      "id": "demo-manhattan-no-shapes",
+      "name": "Demo: Manhattan (no shapes)",
+      "description": "The same routes without shapes.txt, to exercise the stop-based fallback line.",
+      "region": "New York, US",
+      "license": "CC0 (synthetic data)",
+      "url": "feeds/demo-manhattan-no-shapes.zip",
+      "sizeBytes": 2525,
+      "sha256": "f1b31ce0d458354063e0a057362c1f1f4265178703e92a3cb0874d17fb89f1a8"
+    }
+  ]
+}

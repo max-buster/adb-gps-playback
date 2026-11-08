@@ -17,6 +17,12 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+
+        // Example GTFS feeds live in the repo's top-level samples/ folder, not in
+        // the APK. Override with -PsamplesIndexUrl=... to test a fork or branch.
+        val samplesIndexUrl = (findProperty("samplesIndexUrl") as String?)
+            ?: "https://raw.githubusercontent.com/max-buster/adb-gps-playback/main/samples/index.json"
+        buildConfigField("String", "SAMPLES_INDEX_URL", "\"$samplesIndexUrl\"")
     }
 
     buildTypes {
@@ -34,6 +40,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
