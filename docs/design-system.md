@@ -18,20 +18,24 @@ and `ui/components`); the web app still uses its older tokens in
 
 ## Color tokens
 
+The "ghost" palette: neutrals tinted toward green and a pale ghost green
+accent (deepened to sage in light mode so it reads on white), taken from the
+ghost bus launcher icon. Amber stays reserved for mocking.
+
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `bg` | `#F2F4F5` | `#0D1317` | Window |
-| `surface` | `#FFFFFF` | `#151D23` | Cards, sheets, nav |
-| `surface-2` | `#E8ECEE` | `#1E282F` | Inactive / sunken controls |
-| `ink` | `#111A21` | `#E7EDF0` | Text, icons, map marker |
-| `ink-2` | `#55636D` | `#93A1AA` | Secondary text |
-| `line` | `#D3DADF` | `#2A363E` | Dividers, outlines, rails |
-| `accent` | `#2B3BD1` | `#7C88FF` | Primary actions, selection, focus |
-| `accent-soft` | `#E3E6FB` | `#232A5C` | Selected nav item, tonal buttons |
+| `bg` | `#EEF3EC` | `#101612` | Window |
+| `surface` | `#FAFCF9` | `#18201A` | Cards, sheets, nav |
+| `surface-2` | `#E1E9DE` | `#232D25` | Inactive / sunken controls |
+| `ink` | `#17221A` | `#E4EFE1` | Text, icons, map marker |
+| `ink-2` | `#56665A` | `#96A794` | Secondary text |
+| `line` | `#D0DBCD` | `#2D3A2F` | Dividers, outlines, rails |
+| `accent` | `#3E6B45` | `#CFE8C9` | Primary actions, selection, focus |
+| `accent-soft` | `#D4E8CE` | `#2D3A2F` | Selected nav item, tonal buttons |
 | `live` | `#F2A10C` | `#FFB52E` | Mocking only |
 | `live-soft` | `#FDF0D2` | `#3A2A08` | Holding (paused but still mocking) |
 | `route` | `#C0267E` | `#F05BAE` | Default route color |
-| `ok` | `#1F8A4C` | `#4CC27E` | Setup steps done, staged |
+| `ok` | `#1F8A4C` | `#7FD3A8` | Setup steps done, staged |
 | `err` | `#C8322B` | `#F0716A` | Errors, Stop mocking, Remove |
 
 No dynamic (wallpaper) color on Android: the meanings above must look the
@@ -73,6 +77,6 @@ floating over the map (chips, map buttons, the sheet) get a shadow.
   set apart in red.
 - **Segmented choice**: the speed multiplier.
 - **Icons**: hand-written vector drawables in `res/drawable`. Launcher icon is
-  the amber ghost bus (a bus front with a ghost's wavy hem instead of wheels,
-  windshield and headlight "eyes" cut out) on ink, with a monochrome layer for
+  the ghost bus (a bus front with a ghost's wavy hem instead of wheels,
+  windshield and headlight "eyes" cut out) in pale ghost green `#D4E8D0` on dark sage `#2D3A2F`, with a monochrome layer for
   themed icons. The notification icon uses the same silhouette.

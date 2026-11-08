@@ -8,19 +8,21 @@ import androidx.compose.ui.graphics.Color
 /*
  * Design tokens (see docs/design-system.md). Names match the web app's CSS
  * variables. Amber ("live") is reserved for "this device's location is being
- * mocked right now"; nothing else uses it.
+ * mocked right now"; nothing else uses it. The rest is the "ghost" palette:
+ * green-tinted neutrals with a pale ghost green accent, taken from the
+ * launcher icon.
  */
 
 internal object Light {
-    val Bg = Color(0xFFF2F4F5)
-    val Surface = Color(0xFFFFFFFF)
-    val Surface2 = Color(0xFFE8ECEE)
-    val Ink = Color(0xFF111A21)
-    val Ink2 = Color(0xFF55636D)
-    val Line = Color(0xFFD3DADF)
-    val Accent = Color(0xFF2B3BD1)
+    val Bg = Color(0xFFEEF3EC)
+    val Surface = Color(0xFFFAFCF9)
+    val Surface2 = Color(0xFFE1E9DE)
+    val Ink = Color(0xFF17221A)
+    val Ink2 = Color(0xFF56665A)
+    val Line = Color(0xFFD0DBCD)
+    val Accent = Color(0xFF3E6B45)
     val OnAccent = Color(0xFFFFFFFF)
-    val AccentSoft = Color(0xFFE3E6FB)
+    val AccentSoft = Color(0xFFD4E8CE)
     val Live = Color(0xFFF2A10C)
     val OnLive = Color(0xFF2A1C00)
     val LiveSoft = Color(0xFFFDF0D2)
@@ -30,20 +32,20 @@ internal object Light {
 }
 
 internal object Dark {
-    val Bg = Color(0xFF0D1317)
-    val Surface = Color(0xFF151D23)
-    val Surface2 = Color(0xFF1E282F)
-    val Ink = Color(0xFFE7EDF0)
-    val Ink2 = Color(0xFF93A1AA)
-    val Line = Color(0xFF2A363E)
-    val Accent = Color(0xFF7C88FF)
-    val OnAccent = Color(0xFF0D1317)
-    val AccentSoft = Color(0xFF232A5C)
+    val Bg = Color(0xFF101612)
+    val Surface = Color(0xFF18201A)
+    val Surface2 = Color(0xFF232D25)
+    val Ink = Color(0xFFE4EFE1)
+    val Ink2 = Color(0xFF96A794)
+    val Line = Color(0xFF2D3A2F)
+    val Accent = Color(0xFFCFE8C9)
+    val OnAccent = Color(0xFF14201A)
+    val AccentSoft = Color(0xFF2D3A2F)
     val Live = Color(0xFFFFB52E)
     val OnLive = Color(0xFF2A1C00)
     val LiveSoft = Color(0xFF3A2A08)
     val Route = Color(0xFFF05BAE)
-    val Ok = Color(0xFF4CC27E)
+    val Ok = Color(0xFF7FD3A8)
     val Err = Color(0xFFF0716A)
 }
 
