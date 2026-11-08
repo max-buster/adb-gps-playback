@@ -19,5 +19,13 @@ Cross-project rules:
   whether the other side needs the same change.
 - **Don't introduce code sharing** (e.g. Kotlin/JS or a shared TS package)
   without asking. They are separate on purpose.
-- Planning notes live in `docs/`. The Android roadmap is `docs/android-plan.md`;
+- **Keep each project self-contained.** Everything one app needs (sources,
+  build files, docs only it uses, CI triggers) lives inside its folder, so
+  either could be lifted into its own repo with `git subtree split`. Nothing
+  in `web/` may reference `android/` or vice versa.
+- Other top-level folders hold material shared by both apps or by neither
+  (e.g. example feeds). Top-level `docs/` is only for notes that cover both apps (e.g.
+  `docs/design-system.md`). The Android roadmap is `android/docs/android-plan.md`;
   update its status table when you finish a phase.
+- CI is one workflow per project in `.github/workflows/`, path-filtered to that
+  project's folder. Add a new workflow rather than widening an existing one.

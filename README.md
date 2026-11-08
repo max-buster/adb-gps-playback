@@ -18,4 +18,4 @@ Both load a GTFS `.zip`, let you stage trips (building polylines from stops when
 
 - Web app: `cd web && npm install && npm run dev`. See [web/README.md](web/README.md).
 - Android app: `cd android && ./gradlew :app:installDebug`. See [android/README.md](android/README.md).
-- Android roadmap: [docs/android-plan.md](docs/android-plan.md).
+- Android roadmap: [android/docs/android-plan.md](android/docs/android-plan.md).

@@ -61,7 +61,7 @@ through adb. Sideload-only personal tool, so there is no Play Store policy work.
 - **Keep dependencies minimal.** No icon libraries or UI kits beyond Material 3,
   no navigation library, no DI framework. Icons are hand-written vector
   drawables in `res/drawable`.
-- **Use the design tokens** (`ui/theme`, documented in `docs/design-system.md`):
+- **Use the design tokens** (`ui/theme`, documented in the repo-root `docs/design-system.md`):
   `MaterialTheme.colorScheme` plus `AppTokens.colors` for live/route/ok, and
   `AppType` for labels and numbers. No literal colors in screens, and amber
   (`live`) only for the mocking state. Shared widgets live in `ui/components`.
