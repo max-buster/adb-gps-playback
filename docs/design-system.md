@@ -73,5 +73,6 @@ floating over the map (chips, map buttons, the sheet) get a shadow.
   set apart in red.
 - **Segmented choice**: the speed multiplier.
 - **Icons**: hand-written vector drawables in `res/drawable`. Launcher icon is
-  the amber play pin (a map pin with a play triangle cut out) on ink, with a
-  monochrome layer for themed icons.
+  the amber ghost bus (a bus front with a ghost's wavy hem instead of wheels,
+  windshield and headlight "eyes" cut out) on ink, with a monochrome layer for
+  themed icons. The notification icon uses the same silhouette.
