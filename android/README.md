@@ -8,7 +8,7 @@ foreground service with Play/Pause/Stop in its notification.
 
 > Status: early. Setup, GTFS import, staging, a MapLibre route editor and
 > playback with a live map are implemented, but none of it has been run on a
-> device yet. See [`docs/android-plan.md`](../docs/android-plan.md) for what's next.
+> device yet. See [`docs/android-plan.md`](docs/android-plan.md) for what's next.
 
 ## Build and install
 
