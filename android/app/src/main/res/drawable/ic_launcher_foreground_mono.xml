@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Adaptive icon foreground (108dp grid, art inside the 66dp safe zone): a map pin with a play button cut out. -->
+<!-- Adaptive icon foreground (108dp grid, art inside the 66dp safe zone): a ghost bus, a bus front with a ghost's wavy hem instead of wheels. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <group android:pivotX="54" android:pivotY="54" android:scaleX="0.78" android:scaleY="0.78">
-        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M54,86C54,86 30,63 30,46A24,24 0,0 1,78 46C78,63 54,86 54,86ZM48.5,35.5L64.5,46L48.5,56.5Z" />
+    <group android:pivotX="54" android:pivotY="54" android:scaleX="0.8" android:scaleY="0.8">
+        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M32,38A12,12 0 0 1 44,26L64,26A12,12 0 0 1 76,38L76,78A5.5,5.5 0 0 1 65,78A5.5,5.5 0 0 1 54,78A5.5,5.5 0 0 1 43,78A5.5,5.5 0 0 1 32,78ZM40,33L68,33A3,3 0 0 1 71,36L71,49A3,3 0 0 1 68,52L40,52A3,3 0 0 1 37,49L37,36A3,3 0 0 1 40,33ZM39,63A4,4 0 1 0 47,63A4,4 0 1 0 39,63ZM61,63A4,4 0 1 0 69,63A4,4 0 1 0 61,63Z" />
     </group>
 </vector>

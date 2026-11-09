@@ -469,7 +469,7 @@ class RouteMapController(context: Context) {
         const val DOT_IMAGE = "position-dot"
         // Design tokens (ui/theme/Color.kt): route default magenta, ink, live amber.
         val DEFAULT_ROUTE_COLOR = Color.rgb(0xC0, 0x26, 0x7E)
-        const val STOP_COLOR = "#111A21"
+        const val STOP_COLOR = "#17221A"
         val POSITION_COLOR = Color.rgb(0x11, 0x1A, 0x21)
         val LIVE_COLOR = Color.rgb(0xF2, 0xA1, 0x0C)
         const val PAN_MS = 300

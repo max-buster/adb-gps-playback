@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Notification small icon: the play pin from the launcher icon, white on transparent. -->
+<!-- Notification small icon: the ghost bus from the launcher icon, white on transparent. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp"
     android:viewportWidth="72" android:viewportHeight="72">
     <group android:translateX="-18" android:translateY="-18">
-        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M54,86C54,86 30,63 30,46A24,24 0,0 1,78 46C78,63 54,86 54,86ZM48.5,35.5L64.5,46L48.5,56.5Z" />
+        <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd" android:pathData="M32,38A12,12 0 0 1 44,26L64,26A12,12 0 0 1 76,38L76,78A5.5,5.5 0 0 1 65,78A5.5,5.5 0 0 1 54,78A5.5,5.5 0 0 1 43,78A5.5,5.5 0 0 1 32,78ZM40,33L68,33A3,3 0 0 1 71,36L71,49A3,3 0 0 1 68,52L40,52A3,3 0 0 1 37,49L37,36A3,3 0 0 1 40,33ZM39,63A4,4 0 1 0 47,63A4,4 0 1 0 39,63ZM61,63A4,4 0 1 0 69,63A4,4 0 1 0 61,63Z" />
     </group>
 </vector>

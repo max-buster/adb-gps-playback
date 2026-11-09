@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Launcher icon: amber play pin on ink. -->
-    <color name="ic_launcher_background">#FF111A21</color>
+    <!-- Launcher icon: pale ghost green bus on dark sage. -->
+    <color name="ic_launcher_background">#FF2D3A2F</color>
     <!-- Notification accent: the "live" amber. -->
     <color name="live">#FFF2A10C</color>
     <!-- Window backgrounds, matching ui/theme/Color.kt, so there's no white flash on launch. -->
-    <color name="window_bg">#FFF2F4F5</color>
+    <color name="window_bg">#FFEEF3EC</color>
 </resources>
