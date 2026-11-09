@@ -38,7 +38,9 @@ location from there rather than from the platform providers.
 
 ## Usage
 
-1. **Load**: open a GTFS `.zip`, expand a route and tap **Stage** on a shape.
+1. **Load**: open a GTFS `.zip` (or tap **Try an example** to download one of
+   the demo feeds from [`samples/`](../samples/README.md)), expand a route and
+   tap **Stage** on a shape.
    Staging also reads that trip's stops from `stop_times.txt`.
 2. **Edit**: pick a staged route to see it on the map.
    - **Drag** a point to move it

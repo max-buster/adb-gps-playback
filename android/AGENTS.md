@@ -50,6 +50,11 @@ through adb. Sideload-only personal tool, so there is no Play Store policy work.
 - **GTFS shapes are optional.** Keep the stop-based fallback in
   `GtfsParser` (it mirrors `web/lib/gtfs.ts`). Stream `stop_times.txt` and only
   read it when some trip needs the fallback, because it can be hundreds of MB.
+- **Example feeds are never bundled.** They live in the repo's top-level
+  `samples/` (see `samples/README.md`) and are downloaded on demand by
+  `samples/SampleFeeds` from `BuildConfig.SAMPLES_INDEX_URL` into
+  `filesDir/samples/`. Index parsing and validation live in `:core`
+  (`samples/SampleIndex`). Don't add feeds to `res/raw` or `assets/`.
 - **The map renders what it's given.** Edit gestures emit `RouteEdit`s, and
   `AppStore.editRoute` applies them. The controller only draws a live preview
   while dragging. Layer data is GeoJSON built in `:core` (`GeoJson`), and hit
